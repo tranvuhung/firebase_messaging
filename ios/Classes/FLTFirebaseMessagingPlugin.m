@@ -52,9 +52,9 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
     _channel = channel;
     _resumingFromBackground = NO;
     if (![FIRApp appNamed:@"__FIRAPP_DEFAULT"]) {
-      NSLog(@"Configuring the default Firebase app...");
+      //NSLog(@"Configuring the default Firebase app...");
       [FIRApp configure];
-      NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
+      //NSLog(@"Configured the default Firebase app %@.", [FIRApp defaultApp].name);
     }
     [FIRMessaging messaging].delegate = self;
   }
@@ -85,7 +85,7 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
       } else {
         isAtLeastVersion12 = [NSNumber numberWithBool:NO];
       }
-      NSLog(@"UNUserNotificationCenter currentNotificationCenter...");
+      //NSLog(@"UNUserNotificationCenter currentNotificationCenter...");
       [UNUserNotificationCenter currentNotificationCenter].delegate = self;
       [[UNUserNotificationCenter currentNotificationCenter]
           requestAuthorizationWithOptions:authOptions
@@ -160,7 +160,7 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
         instanceIDWithHandler:^(FIRInstanceIDResult *_Nullable instanceIDResult,
                                 NSError *_Nullable error) {
           if (error != nil) {
-            NSLog(@"getToken, error fetching instanceID: %@", error);
+            //NSLog(@"getToken, error fetching instanceID: %@", error);
             result(nil);
           } else {
             result(instanceIDResult.token);
@@ -169,7 +169,7 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
   } else if ([@"deleteInstanceID" isEqualToString:method]) {
     [[FIRInstanceID instanceID] deleteIDWithHandler:^void(NSError *_Nullable error) {
       if (error.code != 0) {
-        NSLog(@"deleteInstanceID, error: %@", error);
+        //NSLog(@"deleteInstanceID, error: %@", error);
         result([NSNumber numberWithBool:NO]);
       } else {
         [[UIApplication sharedApplication] unregisterForRemoteNotifications];
@@ -210,7 +210,7 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
   if (launchOptions != nil) {
     _launchNotification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
   }
-  NSLog(@"[UNUserNotificationCenter currentNotificationCenter]");
+  //NSLog(@"[UNUserNotificationCenter currentNotificationCenter]");
   // if(SYSTEM_VERSION_GRATERTHAN_OR_EQUALTO(@"10.0")) {
     [UNUserNotificationCenter currentNotificationCenter].delegate = self;
   // }  
@@ -244,7 +244,7 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
   [self didReceiveRemoteNotification:userInfo];
-  NSLog(@"===> [UNUserNotificationCenter currentNotificationCenter: %@]", userInfo);
+  //NSLog(@"===> [UNUserNotificationCenter currentNotificationCenter: %@]", userInfo);
   completionHandler(UIBackgroundFetchResultNoData);
   return YES;
 }
@@ -261,14 +261,14 @@ static NSObject<FlutterPluginRegistrar> *_registrar;
 }
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler{
-  NSLog(@"===> [1] User Info : %@",notification.request.content.userInfo);
+  //NSLog(@"===> [1] User Info : %@",notification.request.content.userInfo);
   completionHandler(UNNotificationPresentationOptionAlert);
   [_channel invokeMethod:@"onMessage" arguments:notification.request.content.userInfo];
 }
 
  //Called to let your app know which action was selected by the user for a given notification.
  -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void(^)())completionHandler{
-  NSLog(@"===> [2] User Info : %@",response.notification.request.content.userInfo);
+  //NSLog(@"===> [2] User Info : %@",response.notification.request.content.userInfo);
   completionHandler();
   // [self didReceiveRemoteNotification:response.notification.request.content.userInfo];
   [_channel invokeMethod:@"onTouch" arguments: response.notification.request.content.userInfo];
